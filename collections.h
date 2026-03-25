@@ -2,6 +2,7 @@
 #pragma once
 #include <cstddef>
 #include <iostream>
+#include <optional>
 
 template <typename T>
 concept Printable = requires(std::ostream &os, const T &t) {
@@ -25,4 +26,15 @@ public:
     virtual bool contains(const T &item) const = 0;
     virtual std::size_t size() const = 0;
     virtual bool empty() const { return size() == 0; }
+};
+
+template <Comparable K, Comparable V>
+class Map {
+public:
+    virtual void put(const K &key, const V &value) = 0;
+    virtual std::optional<V> get(const K &key) const = 0;
+    virtual V &operator[](const K &key) = 0;
+    virtual bool containsKey(const K &key) const = 0;
+    virtual std::size_t size() const = 0;
+    virtual ~Map() = default;
 };

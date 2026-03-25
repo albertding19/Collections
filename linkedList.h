@@ -22,6 +22,9 @@ T b = std::move(a) or b = std::move(a) use move constructor and assignment becau
 
 The rationale for copy and move is that move is often more efficient, but we can only move if we are certain that we won't need the object we're stealing from again.
 Thus move semantics are usually only used on rvalues which are expiring.
+
+Note that std::move is like a label indicating that the resources in an object may be moved. It is equivalent to a static cast to an rvalue
+reference type T &&.
 */
 
 template <Comparable T>
