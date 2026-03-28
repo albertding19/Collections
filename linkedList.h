@@ -150,6 +150,12 @@ public:
 
     void add(const T &item) override;
 
+    void append(const T &item);
+
+    void prepend(const T &item);
+
+    std::optional<T> popLeft();
+
     std::optional<T> pop();
 
     bool contains(const T &item) const override;
@@ -258,4 +264,42 @@ std::size_t LinkedList<T>::size() const {
 template <Comparable T>
 bool LinkedList<T>::empty() const {
     return size() == 0;
+}
+
+template <Comparable T>
+void LinkedList<T>::append(const T &item) {
+    add(item);
+}
+
+template <Comparable T>
+void LinkedList<T>::prepend(const T& item) {
+    std::unique_ptr<Node> new_node = std::make_unique<Node>(item);
+
+    new_node->next = std::move(head);
+    if (new_node->next != nullptr) {
+        new_node->next->prev = new_node.get();
+    }
+    if (count == 0) {
+        tail = new_node.get();
+    }
+    head = std::move(new_node);
+
+    count++;
+}
+
+template <Comparable T>
+std::optional<T> LinkedList<T>::popLeft() {
+    if (head == nullptr) {
+        return std::nullopt;
+    }
+    T result = head->val;
+    head = std::move(head->next);
+    if (head != nullptr) {
+        head->prev = nullptr;
+    }
+    count--;
+    if (count == 0) {
+        tail = nullptr;
+    }
+    return result;
 }
