@@ -25,6 +25,8 @@ Thus move semantics are usually only used on rvalues which are expiring.
 
 Note that std::move is like a label indicating that the resources in an object may be moved. It is equivalent to a static cast to an rvalue
 reference type T &&.
+
+a const method means the this becomes a pointer to a const object. So you can't modify member values within a const method
 */
 
 template <Comparable T>
@@ -93,6 +95,56 @@ public:
 
         return *this;
     }
+
+    class Iterator {
+    public:
+        Iterator(Node *curr_node) : curr_node(curr_node) {}
+
+        T &operator*() {
+            return curr_node->val;
+        }
+
+        bool operator!=(const Iterator &other) const {
+            return curr_node != other.curr_node;
+        }
+
+        Iterator &operator++() {
+            curr_node = curr_node->next.get();
+            return *this;
+        }
+
+    private:
+        Node *curr_node;
+    };
+
+    class ConstIterator {
+    public:
+        ConstIterator(const Node *curr_node) : curr_node(curr_node) {}
+
+        const T &operator*() const {
+            return curr_node->val;
+        }
+
+        bool operator!=(const ConstIterator &other) const {
+            return curr_node != other.curr_node;
+        }
+
+        ConstIterator &operator++() {
+            curr_node = curr_node->next.get();
+            return *this;
+        }
+
+    private:
+        const Node *curr_node;
+    };
+
+    Iterator begin() { return Iterator(head.get()); }
+
+    Iterator end() { return nullptr; }
+
+    ConstIterator begin() const { return ConstIterator(head.get()); }
+
+    ConstIterator end() const { return nullptr; }
 
     T &operator[](std::size_t index);
 
