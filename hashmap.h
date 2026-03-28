@@ -34,6 +34,79 @@ public:
 
     ~HashMap() = default;
 
+    // Copy constructor
+    HashMap(const HashMap<K, V> &other) : map(std::make_unique<ResizingArrayList<Entry<K, V>>[]>(other.capacity)), count(other.count), capacity(other.capacity), growthFactor(other.growthFactor), maxLoadFactor(other.maxLoadFactor) {
+
+    }
+
+    // Iterator
+    /*
+        Note that cpp unwraps range based for loops as follows:
+
+        for (init_statement; item-declaration : range-initializer) statement ->
+
+        auto &&range = range-initializer;
+        auto begin = begin-expr; // range-initializer.begin()
+        auto end = end-expr;     // range-initializer.end()
+        for (; begin != end; ++begin) {
+            item-declaration = *begin;
+            statement;
+        }
+
+        So for an iterator, we need to define the ++, !=, and * operators for iterator objects.
+        Think of the dereference operator * as a getValue() method for the Iterator
+    */
+
+    class Iterator {
+    public:
+        Iterator(ResizingArrayList<Entry<K, V>> *map, std::size_t capacity, std::size_t bucket, std::size_t index) :
+            map(map), capacity(capacity), bucket(bucket), index(index) {
+            skipEmpty();
+        }   
+
+        Iterator &operator++() {
+            index++;
+            if (index >= map[bucket].size()) {
+                bucket++;
+                index = 0;
+                skipEmpty();
+            }
+            return *this;
+        }
+
+        Entry<K, V> &operator*() { return map[bucket][index]; }
+
+        // this overload is used whenever const Iterator is used in declaration
+        const Entry<K, V> &operator*() const { return map[bucket][index]; }
+
+        bool operator!=(const Iterator &other) const {
+            return bucket != other.bucket || index != other.index;
+        }  
+        
+    private:
+        ResizingArrayList<Entry<K, V>> *map;
+        std::size_t capacity;
+        std::size_t bucket;
+        std::size_t index;
+            
+        void skipEmpty() {
+            while (bucket < capacity && map[bucket].size() == 0) {
+                bucket++;
+            }
+        }
+    };
+
+    Iterator begin() { return Iterator(map.get(), capacity, 0, 0); }
+
+    Iterator end() { return Iterator(map.get(), capacity, capacity, 0); }
+
+    // The following const overloads are used whenever const Entry<K, V> are required in the iteration
+    // Just think of const as part of the type annotation that enabled polymorphism. const T and T are different types.
+    // non const can be cast to const: const T <: T
+    Iterator begin() const { return Iterator(map.get(), capacity, 0, 0); }
+
+    Iterator end() const { return Iterator(map.get(), capacity, capacity, 0); }
+
     void put(const K &key, const V &value) override;
 
     std::optional<V> get(const K &key) const override;
@@ -46,20 +119,16 @@ public:
 
     std::size_t size() const override;
 
-    friend std::ostream &operator<<(std::ostream &os, const HashMap &hm) requires Printable<K> && Printable<V> {
+    friend std::ostream &operator<<(std::ostream &os, const HashMap<K, V> &hm) requires Printable<K> && Printable<V> {
         os << "{";
         bool first{true};
 
-        for (std::size_t i = 0; i < hm.capacity; i++) {
-            const ResizingArrayList<Entry<K, V>> &bucket = hm.map[i];
-            for (std::size_t j = 0; j < bucket.size(); j++) {
-                Entry<K, V> entry{bucket.get(j)};
-                if (first) {
-                    os << entry.key << " : " << entry.value;
-                    first = false;
-                } else {
-                    os << ", " << entry.key << " : " << entry.value;
-                }
+        for (Entry<K, V> entry : hm) {
+            if (first) {
+                os << entry.key << " : " << entry.value;
+                first = false;
+            } else {
+                os << ", " << entry.key << " : " << entry.value;
             }
         }
 

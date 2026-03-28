@@ -55,6 +55,33 @@ public:
         return os;
     }
 
+    class Iterator {
+    public:
+        Iterator(T *array, std::size_t index) : array(array), index(index) {}
+        
+        const T &operator*() const {
+            return array[index];
+        }
+
+        Iterator &operator++() {
+            index++;
+            return *this;
+        }
+
+        bool operator!=(const Iterator &other) const {
+            return index != other.index;
+        }
+        
+        
+    private:
+        T *array;
+        std::size_t index;
+    };
+
+    Iterator begin() const { return Iterator(array.get(), 0); }
+
+    Iterator end() const { return Iterator(array.get(), count); }
+
 private:
     std::size_t capacity;
     std::size_t count;

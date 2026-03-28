@@ -37,6 +37,11 @@ public:
         return *this;
     }
 
+    friend std::ostream &operator<<(std::ostream &os, const MinHeap<T> &heap) requires Printable<T> {
+        os << array;
+        return os;
+    }
+
 private:
     ResizingArrayList<T> array;
 
