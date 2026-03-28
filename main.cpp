@@ -26,11 +26,18 @@ int main() {
     ResizingArrayList<int> arrayList{ResizingArrayList<int>()};
     arrayList.add(1);
     arrayList.add(20);
+    arrayList.add(3);
+    arrayList.add(5);
+    std::cout << arrayList.size() << '\n';
+    arrayList.remove(0);
+    arrayList.remove(2);
     std::cout << arrayList << std::endl;
 
     HashMap<std::string, int> hashmap = HashMap<std::string, int>();
     hashmap.put("one", 1);
     hashmap.put("two", 2);
+    int removed = hashmap.remove("one").value();
     std::cout << hashmap << std::endl;
+    std::cout << removed << std::endl;
     return 0;
 }

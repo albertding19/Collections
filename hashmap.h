@@ -2,6 +2,7 @@
 #pragma once
 #include "collections.h"
 #include "arrayList.h"
+#include <algorithm>
 
 static constexpr double LOAD_FACTOR{0.7};
 static constexpr std::size_t GROWTH_FACTOR{2};
@@ -40,6 +41,8 @@ public:
     V &operator[](const K &key) override;
 
     bool containsKey(const K &key) const override;
+
+    std::optional<V> remove(const K &key);
 
     std::size_t size() const override;
 
@@ -169,6 +172,20 @@ double HashMap<K, V>::getCurrentLoad() const {
 template <MapKey K, Comparable V>
 std::size_t HashMap<K, V>::size() const {
     return count;
+}
+
+template <MapKey K, Comparable V>
+std::optional<V> HashMap<K, V>::remove(const K &key) {
+    ResizingArrayList<Entry<K, V>> &bucket{map[hash(key)]};
+
+    for (std::size_t i = 0; i < bucket.size(); i++) {
+        if (bucket[i].key == key) {
+            count--;
+            std::optional<Entry<K, V>> result = bucket.remove(i);
+            return result.value().value;
+        }
+    }
+    return std::nullopt;
 }
 
 template <MapKey K, Comparable V>

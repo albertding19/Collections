@@ -29,6 +29,12 @@ public:
 
     bool contains(const T &item) const override;
 
+    void swap(std::size_t index1, std::size_t index2);
+
+    std::optional<T> remove(std::size_t index);
+
+    T pop();
+
     std::size_t size() const override;
 
     T &operator[](std::size_t index);
@@ -86,6 +92,31 @@ bool ResizingArrayList<T>::contains(const T &item) const {
 }
 
 template <Comparable T>
+void ResizingArrayList<T>::swap(std::size_t index1, std::size_t index2) {
+    if (index1 >= count || index2 >= count) {
+        throw std::out_of_range("swap indices out of range");
+    }
+
+    T temp{array[index1]};
+    array[index1] = array[index2];
+    array[index2] = temp;
+}
+
+template <Comparable T>
+std::optional<T> ResizingArrayList<T>::remove(std::size_t index) {
+    if (index < 0 || index >= count) {
+        return std::nullopt;
+    }
+
+    T res = array[index];
+    for (std::size_t i = index; i < count - 1; i++) {
+        array[i] = get(i+1);
+    }
+    count--;
+    return res;
+}
+
+template <Comparable T>
 std::size_t ResizingArrayList<T>::size() const {
     return count;
 }
@@ -104,4 +135,10 @@ T ResizingArrayList<T>::get(std::size_t index) const {
         throw std::out_of_range("Index out of range");
     }
     return array[index];
+}
+
+template <Comparable T>
+T ResizingArrayList<T>::pop() {
+    if (count == 0) throw std::out_of_range("pop on empty array");
+    return array[--count];
 }

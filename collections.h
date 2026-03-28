@@ -16,6 +16,12 @@ concept Comparable = requires(const T &op1, const T &op2) {
     { op1 == op2 } -> std::convertible_to<bool>;
 };
 
+template <typename T>
+concept Ordered = Comparable <T> && requires(const T &op1, const T &op2) {
+    { op1 < op2 } -> std::convertible_to<bool>;
+    { op1 > op2 } -> std::convertible_to<bool>;
+};
+
 template <Comparable T>
 class Collection {
 public:
@@ -37,4 +43,14 @@ public:
     virtual bool containsKey(const K &key) const = 0;
     virtual std::size_t size() const = 0;
     virtual ~Map() = default;
+};
+
+template <Ordered T>
+class Heap {
+public:
+    virtual void push(const T &item) = 0;
+    virtual T pop() = 0;
+    virtual const T &peek() = 0;
+    virtual void heapify() = 0;
+    virtual ~Heap() = default;
 };
