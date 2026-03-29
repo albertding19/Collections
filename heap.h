@@ -71,10 +71,47 @@ const T &MinHeap<T>::peek() const {
     return array[0];
 }
 
+// For heapify we use Floyd's algorithm for O(n) time complexity. 
+// Floyd's algorithm is calling a recursive sift_down function on each node starting from the last node.
+// The alternative is calling sift_up starting from the first node however that would lead to O(nlogn) complexity
+// The reason is that for a binary heap of height h, time complexity sift_down on a node at depth d is h - d, whereas that of sift_up is d,
+// In a binary heap, there are more nodes at deeper levels so repeatedly calling sift_up will be more expensive as there are more nodes in deeper levels.
 template <Ordered T>
 void MinHeap<T>::heapify() {
-    // TODO
-    return;
+    
+    auto siftDown = [this](std::size_t index) {
+        int children = this->hasChildren(index);
+        if (children == 0) {
+            return;
+        }
+        
+        std::size_t smallest_at = index;
+        std::size_t left_child = 2 * index + 1;
+
+        if (this->array[left_child] < this->array[smallest_at]) {
+            smallest_at = left_child;
+        }
+
+        if (children == 2) {
+            std::size_t right_child = 2 * index + 2;
+            if (this->array[right_child] < this->array[smallest_at]) {
+                smallest_at = right_child;
+            }
+        }
+
+        if (smallest_at != index) {
+            this->array.swap(index, smallest_at);
+            siftDown(smallest_at);
+        }
+
+    };
+
+    for (int i = (array.size() / 2) - 1; i >= 0; i--) {
+        // In fact, we only need to start at the last non-leaf node since leaves are already valid heaps.
+        // Also, we need to use a signed int here because std::size_t is always positive so i >= 0 will always be true.
+        // decrementing i when i is 0 just wraps around to a large number if i is std::size_t.
+        siftDown(i);
+    }
 }
 
 template <Ordered T>
