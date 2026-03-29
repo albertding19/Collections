@@ -158,6 +158,10 @@ public:
 
     std::optional<T> pop();
 
+    std::optional<T> peekLeft() const;
+
+    std::optional<T> peekRight() const;
+
     bool contains(const T &item) const override;
 
     std::size_t size() const override;
@@ -302,4 +306,20 @@ std::optional<T> LinkedList<T>::popLeft() {
         tail = nullptr;
     }
     return result;
+}
+
+template <Comparable T>
+std::optional<T> LinkedList<T>::peekLeft() const {
+    if (head == nullptr) {
+        return std::nullopt;
+    }
+    return head->val;
+}
+
+template <Comparable T>
+std::optional<T> LinkedList<T>::peekRight() const {
+    if (tail == nullptr) {
+        return std::nullopt;
+    }
+    return tail->val;
 }
