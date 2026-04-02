@@ -14,6 +14,41 @@ public:
 
     Stack() : stack(LinkedList<T>()) {}
 
+    // Copy Constructor
+    Stack(const Stack<T> &other) : stack(LinkedList<T>()) {
+        for (T item : other.stack) {
+            stack.append(item);
+        }
+    }
+
+    // Move Constructor
+    Stack(Stack<T> &&other) noexcept : stack(std::move(other.stack)) {}
+
+    // Copy assignment
+    Stack &operator=(const Stack<T> &other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        stack = LinkedList<T>();
+        for (T item : other.stack) {
+            stack.append(item);
+        }
+
+        return *this;
+    }
+
+    // Move assignment
+    Stack &operator=(Stack<T> &&other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        stack = std::move(other.stack);
+        
+        return *this;
+    }
+
 private:
     LinkedList<T> stack;
 };

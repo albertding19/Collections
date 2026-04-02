@@ -35,8 +35,57 @@ public:
     ~HashMap() = default;
 
     // Copy constructor
-    HashMap(const HashMap<K, V> &other) : map(std::make_unique<ResizingArrayList<Entry<K, V>>[]>(other.capacity)), count(other.count), capacity(other.capacity), growthFactor(other.growthFactor), maxLoadFactor(other.maxLoadFactor) {
+    HashMap(const HashMap<K, V> &other) : map(std::make_unique<ResizingArrayList<Entry<K, V>>[]>(other.capacity)), count(0), capacity(other.capacity), growthFactor(other.growthFactor), maxLoadFactor(other.maxLoadFactor) {
+        for (Entry<K, V> entry : other) {
+            put(entry.key, entry.value);
+        }
+    }
 
+    // Move constructor
+    HashMap(HashMap<K, V> &&other) : map(std::move(other.map)), count(other.count), capacity(other.capacity), growthFactor(other.growthFactor), maxLoadFactor(other.maxLoadFactor) {
+        other.count = 0;
+        other.capacity = DEFAULT_SIZE;
+        other.growthFactor = GROWTH_FACTOR;
+        other.maxLoadFactor = LOAD_FACTOR;
+    }
+
+    // Copy Assignment
+    HashMap &operator=(const HashMap<K, V> &other) {
+        if (&other == this) {
+            return *this;
+        }
+
+        map = std::make_unique<ResizingArrayList<Entry<K, V>>[]>(other.capacity);
+        count = 0;
+        capacity = other.capacity;
+        growthFactor = other.growthFactor;
+        maxLoadFactor = other.maxLoadFactor;
+
+        for (Entry<K, V> entry : other) {
+            put(entry.key, entry.value);
+        }
+
+        return *this;
+    }
+
+    // Move Assignment
+    HashMap &operator=(HashMap<K, V> &&other) noexcept {
+        if (&other == this) {
+            return *this;
+        }
+
+        map = std::move(other.map);
+        count = other.count;
+        capacity = other.capacity;
+        growthFactor = other.growthFactor;
+        maxLoadFactor = other.maxLoadFactor;
+
+        other.count = 0;
+        other.capacity = DEFAULT_SIZE;
+        other.growthFactor = GROWTH_FACTOR;
+        maxLoadFactor = LOAD_FACTOR;
+
+        return *this;
     }
 
     // Iterator

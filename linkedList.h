@@ -27,6 +27,10 @@ Note that std::move is like a label indicating that the resources in an object m
 reference type T &&.
 
 a const method means the this becomes a pointer to a const object. So you can't modify member values within a const method
+
+noexcept is required to optimise move constructors and assignments. This is because certain STL containers need strong exception guarantees. This is because, in a move operation,
+the previous state cannot be recovered if the operator fails. Unlike a copy operator where the original copy is untouched can can be restores in case of failure.
+This is why certain STL containers like vector internally fall back to copy operations unless a no exception guarantee is given by noexcept.
 */
 
 template <Comparable T>

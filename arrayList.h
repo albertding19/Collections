@@ -23,6 +23,42 @@ public:
         other.count = 0;
     }
 
+    // copy assignment
+    ResizingArrayList &operator=(const ResizingArrayList<T> &other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        array = std::make_unique<T[]>(other.capacity);
+        capacity = other.capacity;
+        count = 0;
+        factor = other.factor;
+        for (std::size_t i = 0; i < other.size(); i++) {
+            add(other.get(i));
+        }
+
+        return *this;
+    }
+
+    // move assignment
+    ResizingArrayList &operator=(ResizingArrayList<T> &&other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        capacity = other.capacity;
+        count = other.count;
+        factor = other.factor;
+        array = std::move(other.array);
+
+        other.capacity = DEFAULT_CAPACITY;
+        other.count = 0;
+        other.factor = DEFAULT_FACTOR;
+
+        return *this;
+    }
+    
+
     ~ResizingArrayList() = default;
 
     void add(const T &item) override;
