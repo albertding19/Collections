@@ -37,8 +37,15 @@ public:
         return *this;
     }
 
+    // Note that dependent return types that require resolution (types where the compiler needs to resolve T) require a typename keyword at the start
+    // The compiler doesn't know what T is yet, so it can't resolvåe Iterator by looking inside ResizingArrayList<T>. By default it assumes T is not a type
+    // This verbosity can be avoided using auto
+    typename ResizingArrayList<T>::Iterator begin() { return array.begin(); }
+
+    typename ResizingArrayList<T>::Iterator end() { return array.end(); }
+
     friend std::ostream &operator<<(std::ostream &os, const MinHeap<T> &heap) requires Printable<T> {
-        os << array;
+        os << heap.array;
         return os;
     }
 

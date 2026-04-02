@@ -49,6 +49,10 @@ public:
         return *this;
     }
 
+    typename LinkedList<T>::Iterator begin() { return stack.begin(); }
+
+    typename LinkedList<T>::Iterator end() { return stack.end(); }
+
 private:
     LinkedList<T> stack;
 };

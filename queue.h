@@ -46,6 +46,10 @@ public:
         return *this;
     }
 
+    typename LinkedList<T>::Iterator begin() { return queue.begin(); }
+
+    typename LinkedList<T>::Iterator end() { return queue.end(); }
+
 private:
     LinkedList<T> queue;
 };
